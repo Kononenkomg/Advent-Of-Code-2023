@@ -16,31 +16,37 @@ function main() {
     const arr = data.split("\n");
     let result = 0;
     arr.forEach((row) => {
-      const id = row.split(":")[0].split(" ")[1];
-      console.log(id);
       const games = row.split(":")[1].split(";");
+      let maxRed = 1;
+      let maxGreen = 1;
+      let maxBlue = 1;
 
-      let gameIsPossible = true;
       games.forEach((game) => {
         const draws = game.split(",");
         draws.forEach((draw) => {
           const trimmed = draw.trim();
-
-          console.log("draw", trimmed);
-
-          const number = trimmed.split(" ")[0];
+          const number = parseInt(trimmed.split(" ")[0]);
           const color = trimmed.split(" ")[1];
-          console.log("number", number);
-          console.log("color", color);
-          console.log("max number", colors.get(color));
-          if (number > colors.get(color)) {
-            gameIsPossible = false;
+          if (color === "red") {
+            if (number > maxRed) {
+
+              maxRed = number;
+            }
+          }
+          if (color === "green") {
+            if (number > maxGreen) {
+              maxGreen = number;
+            }
+          }
+          if (color === "blue") {
+            if (number > maxBlue) {
+              maxBlue = number;
+            }
           }
         });
       });
-      if (gameIsPossible) {
-        result += parseInt(id);
-      }
+
+      result += maxRed * maxGreen * maxBlue;
     });
     console.log(result);
   });
