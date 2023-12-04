@@ -1,8 +1,5 @@
 const fs = require("fs");
 
-const REDS = 12;
-const GREENS = 13;
-const BLUE = 14;
 const colors = new Map();
 colors.set("red", 12);
 colors.set("green", 13);
@@ -29,7 +26,6 @@ function main() {
           const color = trimmed.split(" ")[1];
           if (color === "red") {
             if (number > maxRed) {
-
               maxRed = number;
             }
           }

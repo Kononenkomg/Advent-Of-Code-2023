@@ -2,45 +2,6 @@
 
 import * as fs from "fs";
 
-type checkIfNumberTouchingSymbolInput = {
-  upRow?: string;
-  middleRow: string;
-  downRow?: string;
-  index: number;
-};
-
-function checkIfNotDotAndNotNumber(element: string) {
-  return element && element !== "." && isNaN(parseInt(element));
-}
-
-function checkIfNumberTouchingSymbol(input: checkIfNumberTouchingSymbolInput) {
-  if (checkIfNotDotAndNotNumber(input.upRow?.split("")[input.index - 1])) {
-    return true;
-  }
-  if (checkIfNotDotAndNotNumber(input.upRow?.split("")[input.index])) {
-    return true;
-  }
-  if (checkIfNotDotAndNotNumber(input.upRow?.split("")[input.index + 1])) {
-    return true;
-  }
-  if (checkIfNotDotAndNotNumber(input.middleRow.split("")[input.index - 1])) {
-    return true;
-  }
-  if (checkIfNotDotAndNotNumber(input.middleRow.split("")[input.index + 1])) {
-    return true;
-  }
-  if (checkIfNotDotAndNotNumber(input.downRow?.split("")[input.index - 1])) {
-    return true;
-  }
-  if (checkIfNotDotAndNotNumber(input.downRow?.split("")[input.index + 1])) {
-    return true;
-  }
-  if (checkIfNotDotAndNotNumber(input.downRow?.split("")[input.index])) {
-    return true;
-  }
-  return false;
-}
-
 type checkIfNumberOnTheLeftInput = {
   row: string;
   index: number;
@@ -107,6 +68,20 @@ function mapNumbersFromArray(indexes: number[][], arr: string[]) {
   return result;
 }
 
+function getGearNumbersFromRow(row: string, i: number) {
+  const rowIndexes = [];
+  rowIndexes.push(...checkIfNumberOnTheLeft({ row, index: i }));
+  rowIndexes.push(...checkIfNumberOnTheRight({ row, index: i }));
+  const sortedUpRowIndexes = removeDuplicatesAndSort(rowIndexes);
+  const arrayOfIndexesOfUpRowNumbers =
+    mapSubArraysOfIndexes(sortedUpRowIndexes);
+  return mapNumbersFromArray(
+    arrayOfIndexesOfUpRowNumbers,
+    row.split("")
+  );
+
+}
+
 function main() {
   console.log("start");
   fs.readFile("day3input.txt", "utf8", (err, data) => {
@@ -115,56 +90,14 @@ function main() {
     const arr = data.split("\n");
     let result = 0;
     for (let i = 0; i < arr.length; i++) {
-
       const upRow = arr[i - 1];
       const middleRow = arr[i];
       const downRow = arr[i + 1];
       middleRow.split("").forEach((element, i) => {
         if (element === "*") {
-          const upRowIndexes = [];
-          upRowIndexes.push(
-            ...checkIfNumberOnTheLeft({ row: upRow, index: i })
-          );
-          upRowIndexes.push(
-            ...checkIfNumberOnTheRight({ row: upRow, index: i })
-          );
-          const sortedUpRowIndexes = removeDuplicatesAndSort(upRowIndexes);
-          const arrayOfIndexesOfUpRowNumbers =
-            mapSubArraysOfIndexes(sortedUpRowIndexes);
-          const upRowNumbers = mapNumbersFromArray(
-            arrayOfIndexesOfUpRowNumbers,
-            upRow.split("")
-          );
-          const middleRowIndexes = [];
-          middleRowIndexes.push(
-            ...checkIfNumberOnTheRight({ row: middleRow, index: i })
-          );
-          middleRowIndexes.push(
-            ...checkIfNumberOnTheLeft({ row: middleRow, index: i })
-          );
-          const sortedMiddleRowIndexes =
-            removeDuplicatesAndSort(middleRowIndexes);
-          const arrayOfIndexesOfMiddleRowNumbers = mapSubArraysOfIndexes(
-            sortedMiddleRowIndexes
-          );
-          const middleRowNumbers = mapNumbersFromArray(
-            arrayOfIndexesOfMiddleRowNumbers,
-            middleRow.split("")
-          );
-          const downRowIndexes = [];
-          downRowIndexes.push(
-            ...checkIfNumberOnTheRight({ row: downRow, index: i })
-          );
-          downRowIndexes.push(
-            ...checkIfNumberOnTheLeft({ row: downRow, index: i })
-          );
-          const sortedDownRowIndexes = removeDuplicatesAndSort(downRowIndexes);
-          const arrayOfIndexesOfDownRowNumbers =
-            mapSubArraysOfIndexes(sortedDownRowIndexes);
-          const downRowNumbers = mapNumbersFromArray(
-            arrayOfIndexesOfDownRowNumbers,
-            downRow.split("")
-          );
+          const upRowNumbers = getGearNumbersFromRow(upRow, i)
+          const middleRowNumbers = getGearNumbersFromRow(middleRow, i)
+          const downRowNumbers = getGearNumbersFromRow(downRow, i)
           const resultArray = [
             ...upRowNumbers,
             ...middleRowNumbers,
